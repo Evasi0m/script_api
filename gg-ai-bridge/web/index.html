@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GG AI Memory Hunter</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2"/><path d="M20 20l-3.5-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H7l-3 3V5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-chip" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 3v4M15 3v4M9 17v4M15 17v4M3 9h4M3 15h4M17 9h4M17 15h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-code" viewBox="0 0 24 24"><path d="M8 8L4 12l4 4M16 8l4 4-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-log" viewBox="0 0 24 24"><path d="M6 4h12v16H6z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 8h6M9 12h6M9 16h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="M8 6v12l10-6-10-6z" fill="currentColor"/></symbol>
+    <symbol id="icon-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1" fill="currentColor"/></symbol>
+    <symbol id="icon-reset" viewBox="0 0 24 24"><path d="M12 4v4M12 4a8 8 0 1 0 8 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 4v10M8 11l4 4 4-4M5 19h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-freeze" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="M6 12l4 4 8-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="icon-wifi" viewBox="0 0 24 24"><path d="M4 12a12 12 0 0 1 16 0M7.5 14.5a7 7 0 0 1 9 0M10.5 17a2.5 2.5 0 0 1 3 0M12 19.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </svg>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-icon"><svg><use href="#icon-chip"></use></svg></div>
+        <div>
+          <h1>GG AI Memory Hunter</h1>
+          <p>AI คุม GameGuardian → ได้ script แบบ lua test</p>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="conn" id="ggConn">
+          <svg><use href="#icon-wifi"></use></svg>
+          <span>GG Offline</span>
+        </div>
+        <div class="status-pill" id="statusPill">idle</div>
+      </div>
+    </header>
+
+    <section class="hunt-panel card">
+      <div class="panel-head">
+        <svg><use href="#icon-search"></use></svg>
+        <h2>Hunt Setup</h2>
+      </div>
+      <div class="hunt-grid">
+        <label>Prompt<textarea id="prompt" rows="3" placeholder="เช่น หาค่าเลือดอมตะ แล้วทำสคริปต์เปิด/ปิดโปร"></textarea></label>
+        <label>ชื่อเกม (optional)<input id="game" type="text" placeholder="CookieRun Classic" /></label>
+        <label>Provider<select id="provider"><option value="openai">OpenAI</option><option value="anthropic">Anthropic</option></select></label>
+        <label>Model<input id="model" type="text" placeholder="gpt-4o-mini" /></label>
+        <label>API Key<input id="apiKey" type="password" placeholder="sk-..." /></label>
+        <label>Script Style<select id="scriptStyle">
+          <option value="simple_toggle">Simple Toggle (Helper)</option>
+          <option value="preset_values">Preset Values (Fix)</option>
+          <option value="multi_hack">Multi Hack (Helper2)</option>
+        </select></label>
+      </div>
+      <div class="btn-row">
+        <button id="startBtn" class="btn primary"><svg><use href="#icon-play"></use></svg>เริ่มค้นหา</button>
+        <button id="stopBtn" class="btn danger"><svg><use href="#icon-stop"></use></svg>หยุด</button>
+        <button id="resetBtn" class="btn ghost"><svg><use href="#icon-reset"></use></svg>รีเซ็ต</button>
+        <button id="saveBtn" class="btn ghost">บันทึก Session</button>
+      </div>
+      <div class="hint">
+        <code>npm start</code> → <code>adb reverse tcp:3847 tcp:3847</code> → รัน <code>AI_Memory_Hunter.lua</code>
+      </div>
+    </section>
+
+    <div id="waitBanner" class="wait-banner hidden">
+      <svg><use href="#icon-check"></use></svg>
+      <div>
+        <strong id="waitMessage">รอให้ทำขั้นตอนในเกม</strong>
+        <p>ทำตามที่ AI บอก แล้วกดยืนยัน</p>
+      </div>
+      <button id="ackBtn" class="btn primary">ยืนยัน</button>
+    </div>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab active" data-tab="chat"><svg><use href="#icon-chat"></use></svg><span>Chat</span></button>
+      <button class="tab" data-tab="values"><svg><use href="#icon-chip"></use></svg><span>Values</span></button>
+      <button class="tab" data-tab="script"><svg><use href="#icon-code"></use></svg><span>Script</span></button>
+      <button class="tab" data-tab="logs"><svg><use href="#icon-log"></use></svg><span>Logs</span></button>
+    </nav>
+
+    <main class="panels">
+      <section class="panel card active" data-panel="chat">
+        <div class="chat-list" id="chatList"></div>
+        <form id="chatForm" class="chat-form">
+          <input id="chatInput" type="text" placeholder="คุยกับ AI/GG เช่น ตั้งเลือดเป็น 999 แล้ว freeze" />
+          <button class="btn primary" type="submit">ส่ง</button>
+        </form>
+      </section>
+
+      <section class="panel card" data-panel="values">
+        <div class="panel-head"><svg><use href="#icon-chip"></use></svg><h2>Findings Inspector</h2></div>
+        <div id="findingsList" class="findings-list"></div>
+      </section>
+
+      <section class="panel card" data-panel="script">
+        <div class="panel-head"><svg><use href="#icon-code"></use></svg><h2>Script Export</h2></div>
+        <div class="btn-row">
+          <button id="generateBtn" class="btn primary"><svg><use href="#icon-code"></use></svg>Generate</button>
+          <button id="downloadBtn" class="btn ghost"><svg><use href="#icon-download"></use></svg>Download</button>
+          <button id="copyBtn" class="btn ghost">Copy</button>
+        </div>
+        <pre id="scriptPreview" class="code-block">ยังไม่มีสคริปต์ — ค้นหาให้เจอก่อน แล้วกด Generate</pre>
+      </section>
+
+      <section class="panel card" data-panel="logs">
+        <div class="panel-head"><svg><use href="#icon-log"></use></svg><h2>Live Logs</h2></div>
+        <div class="stats">
+          <div><span>Results</span><strong id="resultsCount">0</strong></div>
+          <div><span>Action</span><strong id="currentAction">-</strong></div>
+          <div><span>Mode</span><strong id="modeLabel">idle</strong></div>
+          <div><span>GG Ping</span><strong id="ggPing">-</strong></div>
+        </div>
+        <div id="logs" class="logs"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
