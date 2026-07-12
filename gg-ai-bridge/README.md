@@ -1,19 +1,16 @@
-# GG AI Memory Hunter
+# GG AI Memory Hunter v2
 
-ระบบให้ AI ควบคุม GameGuardian ค้นหา memory อัตโนมัติ พร้อมเว็บบน PC สำหรับป้อน prompt และดู log แบบ real-time
+ระบบให้ AI คุม GameGuardian ค้นหา memory อัตโนมัติ แปลงเป็น `module + offset` แบบ `lua test/` แก้ค่าผ่านเว็บด้วย chat และ export script `.lua` ใช้ซ้ำได้
 
-## ส่วนประกอบ
+## ความสามารถหลัก
 
-| ส่วน | ไฟล์ | หน้าที่ |
-|------|------|---------|
-| Bridge Server | `server/index.js` | เชื่อม GG กับเว็บ, broadcast log ผ่าน WebSocket |
-| Web UI | `web/` | ป้อน prompt + API key, ดูสถานะและ log |
-| GG Script | `gg-script/AI_Memory_Hunter.lua` | เรียก AI โดยตรงและรันคำสั่งค้นหาใน GG |
-| JSON helper | `gg-script/json.lua` | encode/decode JSON ในสคริปต์ Lua |
+- **Hunt Mode** — AI สั่ง GG ค้นหา/refine/resolve module/offset/probe type
+- **Interactive Mode** — หลังเจอค่าแล้ว แก้ค่า/freeze/read ผ่านเว็บหรือ chat
+- **Chat** — คุยภาษาธรรมชาติ แล้วแปลเป็นคำสั่ง GG
+- **Script Export** — สร้าง `.lua` แบบ `simple_toggle`, `preset_values`, `multi_hack`
+- **Web UI** — Dark theme, SVG icons, รองรับ desktop/mobile
 
-## วิธีใช้
-
-### 1) รัน server บน PC
+## เริ่มใช้งาน
 
 ```bash
 cd gg-ai-bridge
@@ -21,65 +18,63 @@ npm install
 npm start
 ```
 
-เปิดเว็บที่ `http://127.0.0.1:3847`
-
-### 2) เชื่อม Emulator กับ PC
-
-แนะนำใช้ `adb reverse`:
+เปิด `http://127.0.0.1:3847`
 
 ```bash
 adb reverse tcp:3847 tcp:3847
 ```
 
-ถ้าใช้ Android Emulator (AVD) แบบไม่ reverse ให้เลือก URL `http://10.0.2.2:3847` ในสคริปต์ GG
-
-### 3) คัดลอกสคริปต์ไปยัง GameGuardian
-
-วางไฟล์เหล่านี้ในโฟลเดอร์เดียวกันบนเครื่อง/emulator:
-
+คัดลอกไป GameGuardian:
 - `gg-script/AI_Memory_Hunter.lua`
 - `gg-script/json.lua`
 
-แนะนำ path: `/sdcard/GG/scripts/`
+## Flow
 
-### 4) เริ่มใช้งาน
+1. กรอก prompt + API key + script style บนเว็บ → เริ่มค้นหา
+2. รัน `AI_Memory_Hunter.lua` ใน GG
+3. AI ค้นหา → resolve `libgame.so + offset` → probe type → found
+4. เข้า **Interactive Mode** — แก้ค่า/chat บนเว็บ
+5. กด **Generate** → Download script แบบ `lua test/`
 
-1. เปิดเกม + เลือก process ใน GameGuardian
-2. รันสคริปต์ `AI_Memory_Hunter.lua`
-3. เลือก URL ของ bridge server
-4. บนเว็บ กรอก prompt, API key, เลือก provider แล้วกด **เริ่มค้นหา**
-5. AI จะสั่ง GG ค้นหา/refine อัตโนมัติ
-6. ถ้า AI สั่ง `wait_user` ให้ทำตามในเกม แล้วกด **ทำเสร็จแล้ว / ยืนยัน** บนเว็บ
+## Script Templates
 
-## ตัวอย่าง Prompt
+| Style | คล้ายไฟล์ | เหมาะกับ |
+|-------|----------|----------|
+| `simple_toggle` | `CookieRun_Classic_Helper.lua` | เปิด/ปิดโปร |
+| `preset_values` | `Fix.lua` | เลือกหลายระดับค่า |
+| `multi_hack` | `CookieRun_Classic_Helper2.lua` | หลาย offset |
 
-- `หาค่าเลือดที่ลดลงเมื่อโดนตี`
-- `หาค่าเงินในเกมที่ลดเมื่อซื้อของ`
-- `หาค่า speed ของตัวละคร`
+## API สำคัญ
 
-## AI Providers
+| Endpoint | ใช้ทำอะไร |
+|----------|-----------|
+| `POST /api/session/start` | เริ่ม hunt session |
+| `POST /api/chat` | คุยกับ AI/GG |
+| `POST /api/commands` | ส่งคำสั่งไป GG โดยตรง |
+| `GET /api/gg/commands/next` | GG poll คำสั่ง |
+| `POST /api/gg/findings` | อัปเดต findings |
+| `POST /api/script/generate` | สร้าง script `.lua` |
+| `GET /api/history` | ดู session ที่บันทึกไว้ |
 
-- **OpenAI**: ใส่ `sk-...` เลือก model เช่น `gpt-4o-mini`
-- **Anthropic**: ใส่ Claude API key เลือก model เช่น `claude-3-5-haiku-latest`
+## โครงสร้าง
 
-API key ถูกส่งจากเว็บไปยัง GG ผ่าน bridge server ใน session เดียว และ GG เป็นคนเรียก AI API โดยตรง
-
-## คำสั่งที่ AI ใช้ควบคุม GG
-
-| action | ความหมาย |
-|--------|----------|
-| `search` | ค้นหาใหม่ |
-| `refine` | กรองผลลัพธ์ |
-| `clear` | ล้างผลลัพธ์ |
-| `get_results` | ดึงตัวอย่าง address ปัจจุบัน |
-| `freeze` | ล็อกค่า |
-| `wait_user` | รอให้ผู้ใช้ทำขั้นตอนในเกม |
-| `found` | พบค่าแล้ว |
-| `give_up` | หยุดเพราะหาไม่ได้ |
+```
+gg-ai-bridge/
+├── server/
+│   ├── index.js
+│   ├── command-queue.js
+│   ├── findings-store.js
+│   ├── script-generator.js
+│   ├── chat-ai.js
+│   └── session-history.js
+├── templates/
+├── gg-script/
+├── web/
+└── data/
+```
 
 ## หมายเหตุ
 
-- GameGuardian ต้องรองรับ `gg.makeRequest()` และการเข้าถึง HTTPS
-- บาง emulator อาจต้องใช้ LAN IP แทน `127.0.0.1`
-- การค้นหา fuzzy (`decreased`, `increased`, `changed`, `unchanged`) ใช้รูปแบบ `;1` / `;2` / `;3` / `;4` ตามสไตล์ GameGuardian
-- ถ้า AI หลุดจาก JSON ให้ลองเริ่ม session ใหม่หรือเปลี่ยน model
+- API key เก็บใน session และใช้ทั้งจาก GG (hunt) และ server (chat)
+- GG ต้องรองรับ `gg.makeRequest()` HTTPS
+- คุณภาพ script ขึ้นกับว่า AI resolve module/offset ได้ถูกต้อง — ควร test ก่อน export
