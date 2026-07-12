@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GG AI Memory Hunter</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div>
+        <h1>GG AI Memory Hunter</h1>
+        <p class="subtitle">ให้ AI คุม GameGuardian หาค่าใน memory อัตโนมัติ</p>
+      </div>
+      <div class="status-pill" id="statusPill">idle</div>
+    </header>
+
+    <section class="grid">
+      <div class="card">
+        <h2>ตั้งค่า</h2>
+        <label>
+          Prompt / เป้าหมาย
+          <textarea id="prompt" rows="4" placeholder="เช่น หาค่าเลือดที่ลดลงเมื่อโดนตีในเกม"></textarea>
+        </label>
+
+        <label>
+          AI Provider
+          <select id="provider">
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic (Claude)</option>
+          </select>
+        </label>
+
+        <label>
+          Model
+          <input id="model" type="text" placeholder="gpt-4o-mini" />
+        </label>
+
+        <label>
+          API Key
+          <input id="apiKey" type="password" placeholder="sk-... หรือ claude API key" />
+        </label>
+
+        <div class="button-row">
+          <button id="startBtn" class="primary">เริ่มค้นหา</button>
+          <button id="stopBtn" class="danger">หยุด</button>
+          <button id="resetBtn" class="ghost">รีเซ็ต</button>
+        </div>
+
+        <div class="hint">
+          <strong>ขั้นตอน:</strong>
+          <ol>
+            <li>รัน server: <code>npm start</code> ในโฟลเดอร์ <code>gg-ai-bridge</code></li>
+            <li>เชื่อม emulator: <code>adb reverse tcp:3847 tcp:3847</code></li>
+            <li>รันสคริปต์ <code>AI_Memory_Hunter.lua</code> ใน GameGuardian</li>
+            <li>กรอก prompt + API key แล้วกดเริ่มค้นหา</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>สถานะ Session</h2>
+        <div class="stats">
+          <div><span>GG Ping</span><strong id="ggPing">-</strong></div>
+          <div><span>ผลลัพธ์คงเหลือ</span><strong id="resultsCount">0</strong></div>
+          <div><span>Action ปัจจุบัน</span><strong id="currentAction">-</strong></div>
+          <div><span>Provider</span><strong id="providerLabel">-</strong></div>
+        </div>
+
+        <div id="waitBanner" class="wait-banner hidden">
+          <p id="waitMessage">AI รอให้คุณทำอะไรบางอย่างในเกม</p>
+          <button id="ackBtn" class="primary">ทำเสร็จแล้ว / ยืนยัน</button>
+        </div>
+
+        <div class="found-box">
+          <h3>Address ที่พบ</h3>
+          <pre id="foundAddresses">ยังไม่พบ</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="card logs-card">
+      <div class="logs-header">
+        <h2>Live Logs</h2>
+        <button id="clearLogsBtn" class="ghost">ล้างหน้าจอ</button>
+      </div>
+      <div id="logs" class="logs"></div>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

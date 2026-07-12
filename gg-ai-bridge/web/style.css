@@ -1,0 +1,281 @@
+:root {
+  --bg: #0f1117;
+  --card: #171b24;
+  --border: #2a3142;
+  --text: #e8ecf5;
+  --muted: #9aa6bf;
+  --primary: #4f8cff;
+  --danger: #ff5d6c;
+  --success: #3ecf8e;
+  --warn: #ffbe4d;
+  --info: #67b7ff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  background: radial-gradient(circle at top, #1a2233, var(--bg) 45%);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  margin: 0 0 6px;
+  font-size: 1.8rem;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+}
+
+.status-pill {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #10141d;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+}
+
+.status-pill.running { color: var(--success); border-color: #2f6f55; }
+.status-pill.waiting_user { color: var(--warn); border-color: #7a5a1f; }
+.status-pill.found { color: var(--info); border-color: #2f5f8a; }
+.status-pill.error,
+.status-pill.stopped { color: var(--danger); border-color: #7a2f3a; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card {
+  background: rgba(23, 27, 36, 0.92);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  backdrop-filter: blur(8px);
+}
+
+.card h2,
+.card h3 {
+  margin-top: 0;
+}
+
+label {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 0.92rem;
+  color: var(--muted);
+}
+
+textarea,
+input,
+select,
+button {
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #0d1018;
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+button {
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+button:hover {
+  filter: brightness(1.08);
+}
+
+button.primary {
+  background: linear-gradient(135deg, #3f7bff, #2f67e8);
+  border-color: #3f7bff;
+}
+
+button.danger {
+  background: #3a1820;
+  border-color: #8d3140;
+  color: #ffb4bc;
+}
+
+button.ghost {
+  background: transparent;
+}
+
+.hint {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #10151f;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.hint code {
+  color: #d7e4ff;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stats div {
+  padding: 10px;
+  border-radius: 10px;
+  background: #10151f;
+  border: 1px solid var(--border);
+}
+
+.stats span {
+  display: block;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.stats strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.95rem;
+  word-break: break-word;
+}
+
+.wait-banner {
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 190, 77, 0.08);
+  border: 1px solid rgba(255, 190, 77, 0.35);
+}
+
+.wait-banner.hidden {
+  display: none;
+}
+
+.found-box {
+  margin-top: 14px;
+}
+
+.found-box pre {
+  margin: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #0d1018;
+  border: 1px solid var(--border);
+  min-height: 120px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.85rem;
+}
+
+.logs-card {
+  min-height: 360px;
+}
+
+.logs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.logs-header button {
+  width: auto;
+  padding-inline: 14px;
+}
+
+.logs {
+  margin-top: 12px;
+  max-height: 480px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.log-item {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #10151f;
+  font-size: 0.88rem;
+}
+
+.log-item .meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.log-item .badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  text-transform: uppercase;
+  font-size: 0.68rem;
+}
+
+.log-item.info .badge { color: var(--info); }
+.log-item.warn .badge { color: var(--warn); }
+.log-item.error .badge { color: var(--danger); }
+.log-item.success .badge { color: var(--success); }
+
+.log-item pre {
+  margin: 8px 0 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: #0b0e15;
+  overflow: auto;
+  font-size: 0.78rem;
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .button-row {
+    grid-template-columns: 1fr;
+  }
+}
